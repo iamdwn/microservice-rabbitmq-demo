@@ -3,51 +3,51 @@ using BusinessObject.SharedModels.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ponds.Microservice.Controllers
+namespace Users.Microservice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PondsController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public PondsController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Ponds
+        // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Pond>>> GetPonds()
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Ponds.ToListAsync();
+            return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Ponds/5
+        // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pond>> GetPond(Guid id)
+        public async Task<ActionResult<User>> GetUser(Guid id)
         {
-            var pond = await _context.Ponds.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
 
-            if (pond == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return pond;
+            return user;
         }
 
-        // PUT: api/Ponds/5
+        // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPond(Guid id, Pond pond)
+        public async Task<IActionResult> PutUser(Guid id, User user)
         {
-            if (id != pond.Id)
+            if (id != user.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(pond).State = EntityState.Modified;
+            _context.Entry(user).State = EntityState.Modified;
 
             try
             {
@@ -55,7 +55,7 @@ namespace Ponds.Microservice.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PondExists(id))
+                if (!UserExists(id))
                 {
                     return NotFound();
                 }
@@ -68,36 +68,36 @@ namespace Ponds.Microservice.Controllers
             return NoContent();
         }
 
-        // POST: api/Ponds
+        // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Pond>> PostPond(Pond pond)
+        public async Task<ActionResult<User>> PostUser(User user)
         {
-            _context.Ponds.Add(pond);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPond", new { id = pond.Id }, pond);
+            return CreatedAtAction("GetUser", new { id = user.Id }, user);
         }
 
-        // DELETE: api/Ponds/5
+        // DELETE: api/Users/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePond(Guid id)
+        public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var pond = await _context.Ponds.FindAsync(id);
-            if (pond == null)
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            _context.Ponds.Remove(pond);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool PondExists(Guid id)
+        private bool UserExists(Guid id)
         {
-            return _context.Ponds.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

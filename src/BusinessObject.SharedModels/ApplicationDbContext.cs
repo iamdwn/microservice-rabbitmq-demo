@@ -1,13 +1,8 @@
-﻿using KoiCareSys.Data.Models;
+﻿using BusinessObject.SharedModels.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace KoiCareSys.Data
+namespace BusinessObject.SharedModels
 {
     public class ApplicationDbContext : DbContext
     {
@@ -30,7 +25,7 @@ namespace KoiCareSys.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-        public DbSet<Order> Orders{ get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         #endregion DbSet
 
