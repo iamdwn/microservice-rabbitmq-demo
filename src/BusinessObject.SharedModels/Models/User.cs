@@ -4,6 +4,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BusinessObject.SharedModels.Models;
 
@@ -43,6 +44,7 @@ public partial class User
     [EnumDataType(typeof(SharedModel.Enums.UserRole))]
     public SharedModel.Enums.UserRole Role { get; set; } = SharedModel.Enums.UserRole.User;
 
+    [JsonIgnore]
     [InverseProperty("User")]
     public ICollection<Pond> Ponds { get; set; } = new List<Pond>();
 }

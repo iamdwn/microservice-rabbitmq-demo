@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BusinessObject.SharedModels.Models;
 
@@ -57,12 +58,15 @@ public partial class Pond
     public Guid UserId { get; set; }
     public virtual User User { get; set; } = null;
 
+    [JsonIgnore]
     [InverseProperty("Pond")]
     public ICollection<Koi> Koi { get; set; } = new List<Koi>();
 
+    [JsonIgnore]
     [InverseProperty("Pond")]
     public ICollection<Measurement> Measurements { get; set; } = new List<Measurement>();
 
+    [JsonIgnore]
     [InverseProperty("Pond")]
     public ICollection<FeedingSchedule> FeedingSchedules { get; set; } = new List<FeedingSchedule>();
 }
