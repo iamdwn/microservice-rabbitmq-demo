@@ -11,5 +11,17 @@
       ],
       "UpstreamPathTemplate": "/gateway/Product",
       "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/User",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7287
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/User",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
     }
 }
