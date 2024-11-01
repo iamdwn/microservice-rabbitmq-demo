@@ -1,7 +1,8 @@
-﻿using BusinessObject.SharedModels;
+﻿using BusinessObject.SharedModel.Enums;
 using BusinessObject.SharedModels.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Ponds.Microservice.Controllers
 {
@@ -9,95 +10,108 @@ namespace Ponds.Microservice.Controllers
     [ApiController]
     public class PondsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-
-        public PondsController(ApplicationDbContext context)
+        private static List<Pond> _ponds = new List<Pond>
         {
-            _context = context;
-        }
+            new Pond
+            {
+                Id = Guid.NewGuid(),
+                PondName = "Pond A",
+                Volume = 1000m,
+                Depth = 2m,
+                DrainCount = 1,
+                SkimmerCount = 1,
+                PumpCapacity = 200m,
+                ImgUrl = "http://example.com/image1.jpg",
+                Note = "Note for Pond A",
+                Description = "Description for Pond A",
+                Status = PondStatus.Active,
+                IsQualified = true,
+                UserId = Guid.NewGuid() // Simulate a user id
+            },
+            new Pond
+            {
+                Id = Guid.NewGuid(),
+                PondName = "Pond B",
+                Volume = 2000m,
+                Depth = 3m,
+                DrainCount = 2,
+                SkimmerCount = 2,
+                PumpCapacity = 400m,
+                ImgUrl = "http://example.com/image2.jpg",
+                Note = "Note for Pond B",
+                Description = "Description for Pond B",
+                Status = PondStatus.Inactive,
+                IsQualified = false,
+                UserId = Guid.NewGuid() // Simulate a user id
+            }
+        };
 
-        // GET: api/Ponds
+        // GET: api/<PondsController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Pond>>> GetPonds()
+        public ActionResult<IEnumerable<Pond>> Get()
         {
-            return await _context.Ponds.ToListAsync();
+            return _ponds;
         }
 
-        // GET: api/Ponds/5
+        // GET api/<PondsController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pond>> GetPond(Guid id)
+        public ActionResult<Pond> Get(Guid id)
         {
-            var pond = await _context.Ponds.FindAsync(id);
-
+            var pond = _ponds.FirstOrDefault(p => p.Id == id);
             if (pond == null)
             {
                 return NotFound();
             }
-
             return pond;
         }
 
-        // PUT: api/Ponds/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPond(Guid id, Pond pond)
-        {
-            if (id != pond.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(pond).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PondExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Ponds
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // POST api/<PondsController>
         [HttpPost]
-        public async Task<ActionResult<Pond>> PostPond(Pond pond)
+        public ActionResult<Pond> Post([FromBody] Pond newPond)
         {
-            _context.Ponds.Add(pond);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPond", new { id = pond.Id }, pond);
+            newPond.Id = Guid.NewGuid();
+            _ponds.Add(newPond);
+            return CreatedAtAction(nameof(Get), new { id = newPond.Id }, newPond);
         }
 
-        // DELETE: api/Ponds/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePond(Guid id)
+        // PUT api/<PondsController>/5
+        [HttpPut("{id}")]
+        public IActionResult Put(Guid id, [FromBody] Pond updatedPond)
         {
-            var pond = await _context.Ponds.FindAsync(id);
+            var pond = _ponds.FirstOrDefault(p => p.Id == id);
             if (pond == null)
             {
                 return NotFound();
             }
 
-            _context.Ponds.Remove(pond);
-            await _context.SaveChangesAsync();
+            pond.PondName = updatedPond.PondName;
+            pond.Volume = updatedPond.Volume;
+            pond.Depth = updatedPond.Depth;
+            pond.DrainCount = updatedPond.DrainCount;
+            pond.SkimmerCount = updatedPond.SkimmerCount;
+            pond.PumpCapacity = updatedPond.PumpCapacity;
+            pond.ImgUrl = updatedPond.ImgUrl;
+            pond.Note = updatedPond.Note;
+            pond.Description = updatedPond.Description;
+            pond.Status = updatedPond.Status;
+            pond.IsQualified = updatedPond.IsQualified;
+            pond.UserId = updatedPond.UserId;
 
             return NoContent();
         }
 
-        private bool PondExists(Guid id)
+        // DELETE api/<PondsController>/5
+        [HttpDelete("{id}")]
+        public IActionResult Delete(Guid id)
         {
-            return _context.Ponds.Any(e => e.Id == id);
+            var pond = _ponds.FirstOrDefault(p => p.Id == id);
+            if (pond == null)
+            {
+                return NotFound();
+            }
+
+            _ponds.Remove(pond);
+            return NoContent();
         }
     }
 }

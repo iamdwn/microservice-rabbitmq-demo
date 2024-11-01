@@ -37,7 +37,7 @@ public partial class Pond
     public decimal? PumpCapacity { get; set; }
 
     [Column("img_url")]
-    [Url]
+    //[Url]
     public string ImgUrl { get; set; }
     
     [Column("note")]
@@ -56,6 +56,8 @@ public partial class Pond
     [Column("user_id")]
     [ForeignKey("User")]
     public Guid UserId { get; set; }
+
+    [JsonIgnore]
     public virtual User User { get; set; } = null;
 
     [JsonIgnore]
