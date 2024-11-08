@@ -29,6 +29,7 @@ app.MapControllers();
 app.UseRouting();
 
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
 await app.UseOcelot();
 
 app.Run();

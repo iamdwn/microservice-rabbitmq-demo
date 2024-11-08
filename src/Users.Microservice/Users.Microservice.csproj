@@ -23,4 +23,8 @@
     <ProjectReference Include="..\BusinessObject.SharedModels\BusinessObject.SharedModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>

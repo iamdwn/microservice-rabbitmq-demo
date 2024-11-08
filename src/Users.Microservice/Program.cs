@@ -1,5 +1,6 @@
 
 using BusinessObject.SharedModels;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Users.Microservice
@@ -18,6 +19,26 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectio
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(config =>
+                {
+                    //config.UseHealthCheck(provider);
+                    //config.Host(new Uri("rabbitmq://localhost:XXXX"), h =>
+                    config.Host(new Uri("rabbitmq://localhost"), h =>
+                    {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+                }));
+            });
+
+            builder.Host.ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddConsole();
+            });
 
             var app = builder.Build();
 

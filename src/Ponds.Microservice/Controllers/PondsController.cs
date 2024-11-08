@@ -1,5 +1,6 @@
 ﻿using BusinessObject.SharedModel.Enums;
 using BusinessObject.SharedModels.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,6 +11,15 @@ namespace Ponds.Microservice.Controllers
     [ApiController]
     public class PondsController : ControllerBase
     {
+        private readonly IBus _bus;
+        private readonly ILogger<PondsController> _logger;
+
+        public PondsController(IBus bus, ILogger<PondsController> logger)
+        {
+            _bus = bus;
+            _logger = logger;
+        }
+
         private static List<Pond> _ponds = new List<Pond>
         {
             new Pond
@@ -67,11 +77,24 @@ namespace Ponds.Microservice.Controllers
 
         // POST api/<PondsController>
         [HttpPost]
-        public ActionResult<Pond> Post([FromBody] Pond newPond)
+        public async Task<ActionResult<Pond>> Post([FromBody] Pond newPond)
         {
             newPond.Id = Guid.NewGuid();
             _ponds.Add(newPond);
-            return CreatedAtAction(nameof(Get), new { id = newPond.Id }, newPond);
+            #region Business rule process anh/or call other API Service
+
+            #endregion
+
+            #region Publish data to Queue on RabbitMQ
+
+            Uri uri = new Uri("rabbitmq://localhost/pondQueue");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(newPond);
+
+            #endregion
+            string messageLog = string.Format("PUBLISH data to RabbitMQ.pondQueue at " + $"{DateTime.Now}, with pond: koiId = {newPond.Id}");
+            _logger.LogInformation(messageLog);
+            return Ok(messageLog);
         }
 
         // PUT api/<PondsController>/5

@@ -24,4 +24,5 @@
       "UpstreamPathTemplate": "/gateway/User",
       "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
     }
+  ]
 }
