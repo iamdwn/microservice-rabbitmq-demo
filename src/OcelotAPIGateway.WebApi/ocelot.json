@@ -1,28 +1,31 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/Product",
+      "DownstreamPathTemplate": "/api/Ponds",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7286
+          "Port": 7229
         }
       ],
-      "UpstreamPathTemplate": "/gateway/Product",
+      "UpstreamPathTemplate": "/gateway/Ponds",
       "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
     },
     {
-      "DownstreamPathTemplate": "/api/User",
+      "DownstreamPathTemplate": "/api/Users",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7287
+          "Port": 7235
         }
       ],
-      "UpstreamPathTemplate": "/gateway/User",
+      "UpstreamPathTemplate": "/gateway/Users",
       "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
     }
-  ]
+  ],
+  //"GlobalConfiguration": {
+  //  "BaseUrl": "http://localhost:7123"
+  //}
 }

@@ -1,62 +1,55 @@
-
-using BusinessObject.SharedModels;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
+using Users.Microservice.Consumers;
 
-namespace Users.Microservice
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.ConfigureLogging(logging =>
 {
-    public class Program
+    logging.ClearProviders();
+    logging.AddConsole();
+});
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<UserConsumer>();
+    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
     {
-        public static void Main(string[] args)
+        //cfg.UseHealthCheck(provider);
+        //cfg.Host(new Uri("rabbitmq://localhost:xxxx"), h =>
+        cfg.Host(new Uri("rabbitmq://localhost"), h =>
         {
-            var builder = WebApplication.CreateBuilder(args);
+            h.Username("guest");
+            h.Password("guest");
+        });
+        cfg.ReceiveEndpoint("pondQueue", ep =>
+        {
+            ep.PrefetchCount = 16;
+            ep.UseMessageRetry(r => r.Interval(2, 100));
+            ep.ConfigureConsumer<UserConsumer>(provider);
+        });
+    }));
+});
 
-            // Add services to the container.
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Add services to the container.
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-            builder.Services.AddMassTransit(x =>
-            {
-                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(config =>
-                {
-                    //config.UseHealthCheck(provider);
-                    //config.Host(new Uri("rabbitmq://localhost:XXXX"), h =>
-                    config.Host(new Uri("rabbitmq://localhost"), h =>
-                    {
-                        h.Username("guest");
-                        h.Password("guest");
-                    });
-                }));
-            });
+var app = builder.Build();
 
-            builder.Host.ConfigureLogging(logging =>
-            {
-                logging.ClearProviders();
-                logging.AddConsole();
-            });
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

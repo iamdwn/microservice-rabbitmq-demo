@@ -1,7 +1,7 @@
 ﻿using BusinessObject.SharedModels.Models;
 using MassTransit;
 
-namespace Ponds.Microservice.Consumers
+namespace Users.Microservice.Consumers
 {
     public class UserConsumer : IConsumer<Pond>
     {
@@ -25,6 +25,8 @@ namespace Ponds.Microservice.Consumers
             {
                 _logger.LogInformation($"Received message from pond post api: create pond fail");
             }
+
+            await Task.CompletedTask;
         }
     }
 }

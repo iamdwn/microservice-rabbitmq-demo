@@ -92,7 +92,7 @@ namespace Ponds.Microservice.Controllers
             await endPoint.Send(newPond);
 
             #endregion
-            string messageLog = string.Format("PUBLISH data to RabbitMQ.pondQueue at " + $"{DateTime.Now}, with pond: koiId = {newPond.Id}");
+            string messageLog = string.Format("PUBLISH data to RabbitMQ.pondQueue at " + $"{DateTime.Now}, with pond: pondId = {newPond.Id}");
             _logger.LogInformation(messageLog);
             return Ok(messageLog);
         }

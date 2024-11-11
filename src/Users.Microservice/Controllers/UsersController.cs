@@ -1,5 +1,6 @@
 ﻿using BusinessObject.SharedModel.Enums;
 using BusinessObject.SharedModels.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,6 +11,9 @@ namespace Users.Microservice.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private readonly IBus _bus;
+        private readonly ILogger<UsersController> _logger;
+
         private static List<User> _users = new List<User>
         {
             new User
@@ -34,6 +38,12 @@ namespace Users.Microservice.Controllers
             }
         };
 
+        public UsersController(IBus bus, ILogger<UsersController> logger)
+        {
+            _bus = bus;
+            _logger = logger;
+        }
+
         // GET: api/<UsersController>
         [HttpGet]
         public ActionResult<IEnumerable<User>> Get()
@@ -55,11 +65,24 @@ namespace Users.Microservice.Controllers
 
         // POST api/<UsersController>
         [HttpPost]
-        public ActionResult<User> Post([FromBody] User newUser)
+        public async Task<ActionResult<User>> Post([FromBody] User newUser)
         {
             newUser.Id = Guid.NewGuid();
             _users.Add(newUser);
-            return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
+            #region Business rule process anh/or call other API Service
+
+            #endregion
+
+            #region Publish data to Queue on RabbitMQ
+
+            Uri uri = new Uri("rabbitmq://localhost/userQueue");
+            var endPoint = await _bus.GetSendEndpoint(uri);
+            await endPoint.Send(newUser);
+
+            #endregion
+            string messageLog = string.Format("PUBLISH data to RabbitMQ.userQueue at " + $"{DateTime.Now}, with user: userId = {newUser.Id}");
+            _logger.LogInformation(messageLog);
+            return Ok(messageLog);
         }
 
         // PUT api/<UsersController>/5
